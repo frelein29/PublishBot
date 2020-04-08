@@ -37,3 +37,8 @@ elif '--after' in sys.argv:
                          text=f'❌ Build <a href="{os.environ.get("CIRCLE_BUILD_URL")}">'
                               f'#{os.environ.get("CIRCLE_BUILD_NUM")}</a> failed in a {build_time_str}!',
                          parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+if '--fail' in sys.argv:
+    bot.send_message(chat_id=chat_id,
+                     text=f'❌ Build <a href="{os.environ.get("CIRCLE_BUILD_URL")}">'
+                              f'#{os.environ.get("CIRCLE_BUILD_NUM")}</a> failed !',
+                         parse_mode=ParseMode.HTML, disable_web_page_preview=True)
