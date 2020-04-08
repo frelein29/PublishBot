@@ -10,12 +10,12 @@ chat_id = int(os.environ.get('chat_id'))
 product_filename = os.environ.get('product_filename')
 if '--before' in sys.argv:
     bot.send_message(chat_id=chat_id,
-                     text=f'⚙️ Build <a href="{os.environ.get("TRAVIS_BUILD_WEB_URL")}">'
-                          f'#{os.environ.get("TRAVIS_BUILD_NUMBER")}</a> started...',
+                     text=f'⚙️ Build <a href="{os.environ.get("CIRCLE_BUILD_URL")}">'
+                          f'#{os.environ.get("CIRCLE_BUILD_NUM")}</a> started...',
                      parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-    open('/home/travis/time', 'w').write(str(round(time.time())))
+    open('/home/circleci/time', 'w').write(str(round(time.time())))
 elif '--after' in sys.argv:
-    build_time = int(time.time()) - int(open('/home/travis/time', 'r').read())
+    build_time = int(time.time()) - int(open('/home/circleci/time', 'r').read())
     m, s = divmod(build_time, 60)
     h, m = divmod(m, 60)
     build_time_str = f'{s} sec'
@@ -26,14 +26,14 @@ elif '--after' in sys.argv:
 
     files_found = glob.glob(product_filename)
 
-    if (os.environ.get('TRAVIS_TEST_RESULT') == '0') and (len(files_found) > 0):
-        bot.send_message(chat_id=chat_id,
-                         text=f'✅ Build <a href="{os.environ.get("TRAVIS_BUILD_WEB_URL")}">'
-                              f'#{os.environ.get("TRAVIS_BUILD_NUMBER")}</a> succeed in a {build_time_str}!',
-                         parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-        bot.send_document(chat_id=chat_id, document=open(files_found[0], 'rb'))
-    else:
-        bot.send_message(chat_id=chat_id,
-                         text=f'❌ Build <a href="{os.environ.get("TRAVIS_BUILD_WEB_URL")}">'
-                              f'#{os.environ.get("TRAVIS_BUILD_NUMBER")}</a> failed in a {build_time_str}!',
-                         parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+if '--success' in sys.argv and (len(files_found) > 0):
+    bot.send_message(chat_id=chat_id,
+                     text=f'✅ Build <a href="{os.environ.get("CIRCLE_BUILD_URL")}">'
+                          f'#{os.environ.get("CIRCLE_BUILD_NUM")}</a> succeed in a {build_time_str}!',
+                     parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    bot.send_document(chat_id=chat_id, document=open(files_found[0], 'rb'))
+elif '--failed' in sys.argv:
+    bot.send_message(chat_id=chat_id,
+                     text=f'❌ Build <a href="{os.environ.get("CIRCLE_BUILD_URL")}">'
+                          f'#{os.environ.get("CIRCLE_BUILD_NUM")}</a> failed in a {build_time_str}!',
+                     parse_mode=ParseMode.HTML, disable_web_page_preview=True)
