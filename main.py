@@ -13,9 +13,9 @@ if '--before' in sys.argv:
                      text=f'⚙️ Build <a href="{os.environ.get("CIRCLE_BUILD_URL")}">'
                           f'#{os.environ.get("CIRCLE_BUILD_NUM")}</a> started...',
                      parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-    open('/home/circleci/time', 'w').write(str(round(time.time())))
+    open('time', 'w').write(str(round(time.time())))
 elif '--after' in sys.argv:
-    build_time = int(time.time()) - int(open('/home/circleci/time', 'r').read())
+    build_time = int(time.time()) - int(open('time', 'r').read())
     m, s = divmod(build_time, 60)
     h, m = divmod(m, 60)
     build_time_str = f'{s} sec'
